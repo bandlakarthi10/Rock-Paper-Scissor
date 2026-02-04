@@ -3,18 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rock-Paper-Scissor</title>
+    <title>Rock Paper Scissors</title>
     <link rel="stylesheet" href="game.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Rock-Paper-Scissor</h1>
-        <div class="game-board">
-            
-        </div>
-    </div>
 
-    
-</body>
+<h1>Rock Paper Scissors</h1>
+
+<div class="arena">
+    <img id="user" class="hand" src="rock.png" alt="Rock">
+    <span class="vs">VS</span>
+    <img id="computer" class="hand" src="rock.png" alt="Rock">
+</div>
+
+<div class="controls">
+    <button onclick="play('rock')"><img src="rock.png" alt="Rock"></button>
+    <button onclick="play('paper')"><img src="paper.png" alt="Paper"></button>
+    <button onclick="play('scissors')"><img src="scissors.png" alt="Scissors"></button>
+</div>
+
+<p id="result"></p>
+
 <script src="game.js"></script>
+</body>
 </html>
