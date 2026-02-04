@@ -1,9 +1,9 @@
 function play(userChoice) {
 
     const images = {
-        rock: "rock.png",
-        paper: "paper.png",
-        scissors: "scissors.png"
+        rock: "images/rock.png",
+        paper: "images/paper.png",
+        scissors: "images/scissors.png"
     };
 
     const choices = ["rock", "paper", "scissors"];

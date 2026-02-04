@@ -16,18 +16,37 @@ h1 {
     margin: 40px 0;
 }
 
+.hand-wrapper {
+    width: 160px;
+    height: 200px;
+    border-radius: 40%;
+    overflow: hidden;
+    display: inline-block;
+}
+
 .hand {
-    width: 150px;
-    height: auto;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* crop to center */
+    display: block;
 }
 
 #computer {
     transform: rotateY(180deg); /* mirror effect */
 }
 
+/* smaller circular thumbnails for controls */
+.controls button img {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+
 .vs {
-    font-size: 28px;
-    margin: 0 25px;
+    font-size: 24px;
+    margin: 0 18px;
     color: #38bdf8;
 }
 
