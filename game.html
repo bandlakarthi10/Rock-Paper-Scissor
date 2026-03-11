@@ -8,7 +8,35 @@
 </head>
 <body>
 
-<h1>Rock Paper Scissors</h1>
+<h1>Rock Paper Scissors Arena</h1>
+
+<div class="top-bar">
+    <div class="mode-switch">
+        <label>
+            <input type="radio" name="mode" value="computer" checked onchange="changeMode('computer')">
+            VS Computer
+        </label>
+        <label>
+            <input type="radio" name="mode" value="friend" onchange="changeMode('friend')">
+            1 vs 1 Friends
+        </label>
+    </div>
+
+    <div class="scoreboard">
+        <div class="score">
+            <span class="score-label" id="player1-label">You</span>
+            <span class="score-value" id="player1-score">0</span>
+        </div>
+        <div class="round-info">
+            <span>Round</span>
+            <span id="round-number">1</span>
+        </div>
+        <div class="score">
+            <span class="score-label" id="player2-label">Computer</span>
+            <span class="score-value" id="player2-score">0</span>
+        </div>
+    </div>
+</div>
 
 <div class="arena">
     <div class="hand-wrapper">
@@ -20,10 +48,13 @@
     </div>
 </div>
 
+<p id="turn-indicator">Your move: choose Rock, Paper, or Scissors.</p>
+
 <div class="controls">
-    <button onclick="play('rock')"><img src="images/rock.png" alt="Rock"></button>
-    <button onclick="play('paper')"><img src="images/paper.png" alt="Paper"></button>
-    <button onclick="play('scissors')"><img src="images/scissors.png" alt="Scissors"></button>
+    <button onclick="handleChoice('rock')"><img src="images/rock.png" alt="Rock"><span>Rock</span></button>
+    <button onclick="handleChoice('paper')"><img src="images/paper.png" alt="Paper"><span>Paper</span></button>
+    <button onclick="handleChoice('scissors')"><img src="images/scissors.png" alt="Scissors"><span>Scissors</span></button>
+    <button class="secondary" onclick="resetGame()">Reset Match</button>
 </div>
 
 <p id="result"></p>
