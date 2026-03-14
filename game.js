@@ -6,48 +6,44 @@ const images = {
 
 const choices = ["rock", "paper", "scissors"];
 
-let mode = "computer"; // "computer" or "friend"
 let currentRound = 1;
 let player1Score = 0;
 let player2Score = 0;
-let currentTurn = "p1"; // for friend mode: "p1" or "p2"
-let pendingP1Choice = null;
+let isGameOver = false;
 
 function getElements() {
     return {
         userHand: document.getElementById("user"),
         computerHand: document.getElementById("computer"),
+        userWrapper: document.getElementById("user-wrapper"),
+        computerWrapper: document.getElementById("computer-wrapper"),
         result: document.getElementById("result"),
         roundNumber: document.getElementById("round-number"),
         player1ScoreEl: document.getElementById("player1-score"),
         player2ScoreEl: document.getElementById("player2-score"),
-        player1Label: document.getElementById("player1-label"),
-        player2Label: document.getElementById("player2-label"),
-        turnIndicator: document.getElementById("turn-indicator")
+        turnIndicator: document.getElementById("turn-indicator"),
+        matchLimitEl: document.getElementById("match-limit"),
+        gameOverOverlay: document.getElementById("game-over-overlay"),
+        finalHeroScore: document.getElementById("final-hero-score"),
+        finalAndroidScore: document.getElementById("final-android-score"),
+        finalStatus: document.getElementById("final-status"),
+        finalMessage: document.getElementById("final-message"),
+        arenaMain: document.getElementById("arena-main"),
+        gameControls: document.getElementById("game-controls")
     };
 }
 
 function updateScoreboard() {
     const { roundNumber, player1ScoreEl, player2ScoreEl } = getElements();
-    roundNumber.textContent = String(currentRound);
-    player1ScoreEl.textContent = String(player1Score);
-    player2ScoreEl.textContent = String(player2Score);
+    if (roundNumber) roundNumber.textContent = String(currentRound);
+    if (player1ScoreEl) player1ScoreEl.textContent = String(player1Score);
+    if (player2ScoreEl) player2ScoreEl.textContent = String(player2Score);
 }
 
-function updateTurnIndicator() {
+function updateTurnIndicator(text) {
     const { turnIndicator } = getElements();
-
     if (!turnIndicator) return;
-
-    if (mode === "computer") {
-        turnIndicator.textContent = "Your move: choose Rock, Paper, or Scissors.";
-    } else {
-        if (currentTurn === "p1") {
-            turnIndicator.textContent = "Player 1: choose your move.";
-        } else {
-            turnIndicator.textContent = "Player 2: choose your move.";
-        }
-    }
+    turnIndicator.textContent = text || "Your move, Hero. Select your weapon.";
 }
 
 function setResult(text, statusClass) {
@@ -61,43 +57,89 @@ function setResult(text, statusClass) {
     result.textContent = text;
 }
 
-function changeMode(newMode) {
-    mode = newMode === "friend" ? "friend" : "computer";
-
-    const { player1Label, player2Label } = getElements();
-
-    if (mode === "computer") {
-        if (player1Label) player1Label.textContent = "You";
-        if (player2Label) player2Label.textContent = "Computer";
-    } else {
-        if (player1Label) player1Label.textContent = "Player 1";
-        if (player2Label) player2Label.textContent = "Player 2";
-    }
-
-    resetGame();
+function clearEffects() {
+    const { userWrapper, computerWrapper, userHand, computerHand } = getElements();
+    [userWrapper, computerWrapper].forEach(w => {
+        if (!w) return;
+        w.classList.remove("winner", 
+            "anim-smash-left", "anim-smash-right", 
+            "anim-wrap-left", "anim-wrap-right", 
+            "anim-cut-left", "anim-cut-right", 
+            "anim-clash-left", "anim-clash-right",
+            "anim-react-hit-left", "anim-react-hit-right"
+        );
+    });
+    [userHand, computerHand].forEach(h => h?.classList.remove("shake"));
 }
 
 function resetGame() {
-    const { userHand, computerHand } = getElements();
+    const { userHand, computerHand, gameOverOverlay, arenaMain, gameControls } = getElements();
 
     currentRound = 1;
     player1Score = 0;
     player2Score = 0;
-    currentTurn = "p1";
-    pendingP1Choice = null;
+    isGameOver = false;
 
     if (userHand) userHand.src = images.rock;
     if (computerHand) computerHand.src = images.rock;
 
+    clearEffects();
     setResult("", "");
     updateScoreboard();
     updateTurnIndicator();
+
+    if (gameOverOverlay) {
+        gameOverOverlay.classList.add("hidden");
+        gameOverOverlay.classList.remove("victory", "defeat");
+    }
+    arenaMain?.style.setProperty("filter", "none");
+    gameControls?.classList.remove("disabled");
+}
+
+function showGameOver(winner) {
+    const els = getElements();
+    const { gameOverOverlay, finalHeroScore, finalAndroidScore, finalMessage, finalStatus, arenaMain, gameControls } = els;
+    
+    isGameOver = true;
+    
+    if (finalHeroScore) finalHeroScore.textContent = String(player1Score);
+    if (finalAndroidScore) finalAndroidScore.textContent = String(player2Score);
+    
+    if (winner === "p1") {
+        if (finalStatus) {
+            finalStatus.textContent = "HERO VICTORIOUS";
+            finalStatus.style.color = "var(--accent-blue)";
+        }
+        if (finalMessage) finalMessage.textContent = "You have dominated the Arena. Future belongs to you.";
+        gameOverOverlay?.classList.add("victory");
+        gameOverOverlay?.classList.remove("defeat", "draw");
+    } else if (winner === "p2") {
+        if (finalStatus) {
+            finalStatus.textContent = "ANDROID VICTORIOUS";
+            finalStatus.style.color = "var(--accent-red)";
+        }
+        if (finalMessage) finalMessage.textContent = "The Android has surpassed its creator. Better luck next time.";
+        gameOverOverlay?.classList.add("defeat");
+        gameOverOverlay?.classList.remove("victory", "draw");
+    } else {
+        if (finalStatus) {
+            finalStatus.textContent = "IT'S A TIE";
+            finalStatus.style.color = "var(--accent-yellow, #f0c040)";
+        }
+        if (finalMessage) finalMessage.textContent = "The Arena could not determine a champion. Perfectly matched!";
+        gameOverOverlay?.classList.add("draw");
+        gameOverOverlay?.classList.remove("victory", "defeat");
+    }
+
+    if (gameOverOverlay) {
+        gameOverOverlay.classList.remove("hidden");
+    }
+    arenaMain?.style.setProperty("filter", "blur(10px)");
+    gameControls?.classList.add("disabled");
 }
 
 function decideWinner(firstChoice, secondChoice) {
-    if (firstChoice === secondChoice) {
-        return "draw";
-    }
+    if (firstChoice === secondChoice) return "draw";
 
     const winsAgainst = {
         rock: "scissors",
@@ -105,44 +147,81 @@ function decideWinner(firstChoice, secondChoice) {
         scissors: "paper"
     };
 
-    if (winsAgainst[firstChoice] === secondChoice) {
-        return "p1";
-    }
-
-    return "p2";
+    return winsAgainst[firstChoice] === secondChoice ? "p1" : "p2";
 }
 
-function applyOutcome(outcome) {
+function applyOutcome(outcome, userChoice, computerChoice) {
+    const { userWrapper, computerWrapper, matchLimitEl } = getElements();
+    
+    clearEffects();
+
+    // Determine specific interaction animation
     if (outcome === "p1") {
         player1Score += 1;
-        setResult(mode === "computer" ? "You win this round." : "Player 1 wins this round.", "win");
+        setResult("Victory is yours, Hero!", "win");
+        userWrapper?.classList.add("winner");
+        
+        // Winner animations
+        if (userChoice === "rock") userWrapper?.classList.add("anim-smash-left");
+        if (userChoice === "paper") userWrapper?.classList.add("anim-wrap-left");
+        if (userChoice === "scissors") userWrapper?.classList.add("anim-cut-left");
+        
+        // Loser reactions
+        computerWrapper?.classList.add("anim-react-hit-right");
+
     } else if (outcome === "p2") {
         player2Score += 1;
-        setResult(mode === "computer" ? "Computer wins this round." : "Player 2 wins this round.", "lose");
+        setResult("The Android prevails.", "lose");
+        computerWrapper?.classList.add("winner");
+
+        // Winner animations
+        if (computerChoice === "rock") computerWrapper?.classList.add("anim-smash-right");
+        if (computerChoice === "paper") computerWrapper?.classList.add("anim-wrap-right");
+        if (computerChoice === "scissors") computerWrapper?.classList.add("anim-cut-right");
+        
+        // Loser reactions
+        userWrapper?.classList.add("anim-react-hit-left");
+
     } else {
-        setResult("This round is a draw.", "draw");
+        setResult("A stalemate in the arena.", "draw");
+        userWrapper?.classList.add("anim-clash-left");
+        computerWrapper?.classList.add("anim-clash-right");
     }
 
     currentRound += 1;
     updateScoreboard();
-    updateTurnIndicator();
+
+    const totalRounds = parseInt(matchLimitEl?.value || "0");
+    // Rounds played = currentRound - 1 (we already incremented above)
+    const roundsPlayed = currentRound - 1;
+    if (totalRounds > 0 && roundsPlayed >= totalRounds) {
+        isGameOver = true;
+        setTimeout(() => {
+            if (player1Score > player2Score) {
+                showGameOver("p1");
+            } else if (player2Score > player1Score) {
+                showGameOver("p2");
+            } else {
+                showGameOver("tie");
+            }
+        }, 1000);
+    }
 }
 
 function handleChoice(choice) {
-    const { userHand, computerHand } = getElements();
+    if (isGameOver) return;
 
+    const { userHand, computerHand } = getElements();
     if (!userHand || !computerHand) return;
 
+    clearEffects();
     userHand.classList.add("shake");
     computerHand.classList.add("shake");
+    
+    updateTurnIndicator("Engaging battle protocols...");
 
-    // Delay to show shake animation before revealing hands
     setTimeout(() => {
-        if (mode === "computer") {
-            playVsComputer(choice);
-        } else {
-            playFriendMode(choice);
-        }
+        playVsComputer(choice);
     }, 600);
 }
 
@@ -159,48 +238,20 @@ function playVsComputer(userChoice) {
     computerHand.classList.remove("shake");
 
     const outcome = decideWinner(userChoice, computerChoice);
-    applyOutcome(outcome);
+    applyOutcome(outcome, userChoice, computerChoice);
+    
+    if (!isGameOver) {
+        setTimeout(() => {
+            if (outcome === "draw") {
+                updateTurnIndicator("The arena demands another clash.");
+            } else {
+                updateTurnIndicator("Choose your next strike, Hero.");
+            }
+        }, 2000);
+    }
 }
 
-function playFriendMode(choice) {
-    const { userHand, computerHand } = getElements();
-    if (!userHand || !computerHand) return;
-
-    if (currentTurn === "p1") {
-        // Store Player 1 choice, switch turn without revealing yet
-        pendingP1Choice = choice;
-        currentTurn = "p2";
-
-        userHand.classList.remove("shake");
-        computerHand.classList.remove("shake");
-
-        setResult("Player 2: choose your move.", "");
-        updateTurnIndicator();
-        return;
-    }
-
-    if (!pendingP1Choice) {
-        return;
-    }
-
-    const p1Choice = pendingP1Choice;
-    const p2Choice = choice;
-
-    pendingP1Choice = null;
-    currentTurn = "p1";
-
-    userHand.src = images[p1Choice];
-    computerHand.src = images[p2Choice];
-
-    userHand.classList.remove("shake");
-    computerHand.classList.remove("shake");
-
-    const outcome = decideWinner(p1Choice, p2Choice);
-    applyOutcome(outcome);
-}
-
-// Initialize when DOM is ready
 document.addEventListener("DOMContentLoaded", () => {
     updateScoreboard();
     updateTurnIndicator();
-});
+});
