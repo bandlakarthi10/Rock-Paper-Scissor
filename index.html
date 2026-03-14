@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors Arena | Futuristic 3D Battle</title>
+    <meta name="description" content="Experience the ultimate Rock Paper Scissors battle in a futuristic 3D arena. Challenge the computer in this premium, high-visual-impact game.">
+    <link rel="stylesheet" href="game.css">
+</head>
+<body>
+
+<h1>The Arena</h1>
+
+<div class="top-bar">
+    <div class="scoreboard">
+        <div class="score">
+            <span class="score-label" id="player1-label">Hero</span>
+            <span class="score-value" id="player1-score">0</span>
+        </div>
+        
+        <div class="match-meta">
+            <div class="round-info">
+                <span>Round</span>
+                <span id="round-number">1</span>
+            </div>
+            <div class="match-type">
+                <span>Target</span>
+                <select id="match-limit" onchange="resetGame()">
+                    <option value="0">Infinite</option>
+                    <option value="3">Best of 3</option>
+                    <option value="5">Best of 5</option>
+                    <option value="7">Best of 7</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="score">
+            <span class="score-label" id="player2-label">Android</span>
+            <span class="score-value" id="player2-score">0</span>
+        </div>
+    </div>
+</div>
+
+<main class="arena" id="arena-main">
+    <div id="user-wrapper" class="hand-wrapper">
+        <img id="user" class="hand" src="images/rock.png" alt="Rock">
+    </div>
+    <span class="vs">VS</span>
+    <div id="computer-wrapper" class="hand-wrapper">
+        <img id="computer" class="hand" src="images/rock.png" alt="Rock">
+    </div>
+</main>
+
+<p id="turn-indicator">Your move, Hero. Select your weapon.</p>
+
+<section class="controls" id="game-controls">
+    <button onclick="handleChoice('rock')" title="Select Rock">
+        <img src="images/rock.png" alt="Rock">
+        <span>Rock</span>
+    </button>
+    <button onclick="handleChoice('paper')" title="Select Paper">
+        <img src="images/paper.png" alt="Paper">
+        <span>Paper</span>
+    </button>
+    <button onclick="handleChoice('scissors')" title="Select Scissors">
+        <img src="images/scissors.png" alt="Scissors">
+        <span>Scissors</span>
+    </button>
+    <button class="secondary" onclick="resetGame()">Reset Match</button>
+</section>
+
+<p id="result" aria-live="polite"></p>
+
+<div id="game-over-overlay" class="overlay hidden">
+    <div class="modal">
+        <h2 id="final-status">Match Over</h2>
+        <div class="final-scores">
+            <div class="final-score">
+                <span id="final-hero-label">Hero</span>
+                <span id="final-hero-score">0</span>
+            </div>
+            <div class="final-divider">:</div>
+            <div class="final-score">
+                <span id="final-android-label">Android</span>
+                <span id="final-android-score">0</span>
+            </div>
+        </div>
+        <p id="final-message">Victory is yours!</p>
+        <button class="primary-btn" onclick="resetGame()">Enter The Arena Again</button>
+    </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
